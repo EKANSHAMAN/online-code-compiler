@@ -9,7 +9,15 @@ const authRoutes = require("./routes/authRoutes");
 const app = express();
 
 // Middleware
-app.use(cors({ origin: '*' }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Handle preflight (OPTIONS) requests
+app.options('*', cors());
+
 app.use(bodyParser.json());
 app.use("/auth", authRoutes);
 
