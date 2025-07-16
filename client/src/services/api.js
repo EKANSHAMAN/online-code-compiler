@@ -6,6 +6,6 @@ export const fetchSharedCode = (id) => {
   return axios.get(`${BASE_URL}/code/${id}`);
 };
 
-export const runCode = (code, language) => {
+export const runCode = (code, language) =>  {
   return axios.post(`${BASE_URL}/run`, { code, language });
 };
