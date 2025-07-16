@@ -8,24 +8,28 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-// Middleware
+// MongoDB Connection (connect as early as possible)
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
+
+// CORS Setup
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Handle preflight (OPTIONS) requests
-app.options('*', cors());
-
+// Middleware
 app.use(bodyParser.json());
+
+// Health Check Route (Important for Render & Vercel health monitoring)
+app.get("/", (req, res) => {
+  res.status(200).send("✅ Backend is running.");
+});
+
+// API Routes
 app.use("/auth", authRoutes);
-
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Connected to MongoDB Atlas"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
-
-app.use("/", codeRoutes);
+app.use("/code", codeRoutes);
 
 module.exports = app;

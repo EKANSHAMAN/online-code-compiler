@@ -18,7 +18,10 @@ exports.runCode = async (req, res) => {
   }
 
   const result = await runCodeInDocker(filename, language, code);
-  const shareableLink = `http://localhost:5000/code/${savedCode._id}`;
+
+  // Construct dynamic base URL using request headers
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const shareableLink = `${baseUrl}/code/${savedCode._id}`;
 
   res.json({
     output: result.output,

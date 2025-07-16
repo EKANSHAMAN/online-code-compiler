@@ -8,17 +8,28 @@ const router = express.Router();
 // REGISTER Route
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
 
   try {
-    const user = await User.create({
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email or username already exists." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await User.create({
       username,
       email,
       password: hashedPassword,
     });
+
     res.json({ message: "User registered successfully." });
   } catch (err) {
-    res.status(400).json({ error: "Email or username already exists." });
+    res.status(500).json({ error: "Registration failed." });
   }
 });
 
@@ -26,20 +37,27 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ error: "User not found." });
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password required." });
+  }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(401).json({ error: "Invalid password." });
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: "User not found." });
 
-  const token = jwt.sign(
-    { userId: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ error: "Invalid password." });
 
-  // ✅ Include username in response
-  res.json({ token, username: user.username });
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({ token, username: user.username });
+  } catch (err) {
+    res.status(500).json({ error: "Login failed." });
+  }
 });
 
 module.exports = router;
