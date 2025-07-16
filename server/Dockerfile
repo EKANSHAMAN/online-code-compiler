@@ -1,20 +1,20 @@
-FROM ubuntu:22.04
+# Use official Node.js image
+FROM node:18
 
-# Install compilers
-RUN apt-get update && apt-get install -y \
-    g++ \
-    python3 \
-    openjdk-17-jdk \
-    && apt-get clean
+# Set working directory inside container
+WORKDIR /app
 
-# Set working directory
-WORKDIR /code
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-# Copy files
-COPY run.sh /code/run.sh
+# Install backend dependencies
+RUN npm install
 
-# Make script executable
-RUN chmod +x /code/run.sh
+# Copy rest of the backend files
+COPY . .
 
-# Run script as container entrypoint
-ENTRYPOINT [ "/bin/bash", "/code/run.sh" ]
+# Expose the port (Ensure your Express app uses process.env.PORT)
+EXPOSE 5000
+
+# Start the server
+CMD ["node", "server.js"]
