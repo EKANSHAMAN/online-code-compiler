@@ -7,7 +7,7 @@ export const fetchSharedCode = (id) => {
 };
 
 export const runCode = (code, language) => {
-  return axios.post(`${BASE_URL}/run`, { code, language });
+  return axios.post(`${BASE_URL}/code/run`, { code, language });
 };
 
 export const loginUser = (email, password) => {
