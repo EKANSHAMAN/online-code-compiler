@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button, TextField, Typography, Container, Box } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
+import { loginUser } from '../services/api';  // <-- Import API function
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -12,11 +12,7 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('https://online-code-compiler-cr6y.onrender.com/auth/login', {
-        email,
-        password,
-      });
-
+      const res = await loginUser(email, password);  // <-- Use API function
       const token = res.data.token;
       const username = res.data.username;
 
