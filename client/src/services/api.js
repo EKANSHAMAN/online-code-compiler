@@ -17,3 +17,5 @@ export const loginUser = (email, password) => {
 export const registerUser = (userData) => {
   return axios.post(`${BASE_URL}/auth/register`, userData);
 };
+
+export default BASE_URL;  // Optional: reuse if needed

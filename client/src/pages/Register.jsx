@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button, TextField, Typography, Container, Box } from '@mui/material';
+import { registerUser } from '../api/api';  // ✅ Use centralized API call
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -11,11 +11,7 @@ function Register() {
 
   const handleRegister = async () => {
     try {
-      await axios.post('http://localhost:5000/auth/register', {
-        username,
-        email,
-        password,
-      });
+      await registerUser({ username, email, password });  // ✅ Call from api.js
       alert('✅ Registration successful!');
       navigate('/login');
     } catch {
