@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://online-code-compiler-cr6y.onrender.com";
 
 export const fetchSharedCode = (id) => {
   return axios.get(`${BASE_URL}/code/${id}`);
